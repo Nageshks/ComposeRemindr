@@ -6,8 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.zenhealth.remindr.RemindrLogger
-import com.zenhealth.remindrdemo.ui.theme.RemindrDemoTheme
+import com.zenhealth.remindr.Remindr
+import com.zenhealth.remindr.utils.RemindrLogger
+import com.zenhealth.remindrdemo.theme.RemindrDemoTheme
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,7 +20,7 @@ class MainActivity : ComponentActivity() {
         RemindrLogger.isLoggingEnabled = true
         setContent {
             RemindrDemoTheme {
-                RemindrApp()
+                RemindrDemoApp()
             }
         }
     }
@@ -26,6 +30,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     RemindrDemoTheme {
-        RemindrApp()
+        RemindrDemoApp()
     }
 }
