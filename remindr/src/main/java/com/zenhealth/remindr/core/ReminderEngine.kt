@@ -31,7 +31,7 @@ class ReminderEngine(
         RemindrLogger.d("📌 Registered reminder: ${reminder.id}")
     }
 
-    fun setReminders(scope: CoroutineScope, block: ReminderGroupBuilder.() -> Unit) {
+    fun buildReminders(scope: CoroutineScope, block: ReminderGroupBuilder.() -> Unit) {
         val newReminders = ReminderGroupBuilder().apply(block).build()
         activeReminders.addAll(newReminders)
         scope.launch { evaluateReminders() }

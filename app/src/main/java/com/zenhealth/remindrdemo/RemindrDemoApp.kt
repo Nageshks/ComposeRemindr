@@ -39,7 +39,7 @@ fun RemindrDemoApp() {
         RemindrProvider(navController) {
             val remindr = LocalRemindr.current
             LaunchedEffect(Unit) {
-                remindr.setReminders(this){
+                remindr.buildReminders(this){
                     reminder {
                         id("onboarding")
                         condition {
