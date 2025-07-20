@@ -2,14 +2,16 @@ package com.zenhealth.remindr.core
 
 import com.zenhealth.remindr.listener.ReminderEvaluationListener
 import com.zenhealth.remindr.state.AppState
+import com.zenhealth.remindr.state.SessionState
 import com.zenhealth.remindr.storage.ReminderStorage
 import com.zenhealth.remindr.utils.RemindrLogger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 class ReminderEngine(
-    private val storage: ReminderStorage,
-    private val appState: AppState,
+    val storage: ReminderStorage,
+    val appState: AppState,
+    val sessionState: SessionState,
     private val coroutineScope: CoroutineScope
 ) {
     private val activeReminders = mutableListOf<Reminder>()
@@ -61,7 +63,7 @@ class ReminderEngine(
         val nextReminder = activeReminders
             .sortedBy { it.priority }
             .firstOrNull { reminder ->
-                val context = ReminderContext(storage, appState, reminder.id)
+                val context = ReminderContext(storage, appState, sessionState, reminder.id)
 
                 val externalConditionsMet = reminder.externalConditionKeys
                     .all { key -> externalConditions[key]?.isSatisfied() ?: false }

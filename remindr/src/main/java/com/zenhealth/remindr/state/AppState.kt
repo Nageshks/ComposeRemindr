@@ -12,4 +12,6 @@ interface AppState {
     val lastLaunchTime: Instant
     var currentRoute: String?
     fun getCurrentActivity(): Activity?
+    suspend fun incrementLaunchCount()
+
 }

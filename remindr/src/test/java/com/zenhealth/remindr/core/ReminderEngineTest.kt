@@ -2,8 +2,8 @@
 
 package com.zenhealth.remindr.core
 
-import com.zenhealth.remindr.conditions.AlwaysFalseCondition
-import com.zenhealth.remindr.conditions.AlwaysTrueCondition
+import com.zenhealth.remindr.conditions.basic.AlwaysFalseCondition
+import com.zenhealth.remindr.conditions.basic.AlwaysTrueCondition
 import com.zenhealth.remindr.fake.FakeAppState
 import com.zenhealth.remindr.fake.FakeExternalCondition
 import com.zenhealth.remindr.fake.FakeReminderStorage

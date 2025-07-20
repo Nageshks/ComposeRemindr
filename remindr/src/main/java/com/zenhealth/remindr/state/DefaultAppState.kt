@@ -10,15 +10,22 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-class AppStateImpl(
+class DefaultAppState(
     private val context: Context
 ) : AppState {
     private val prefs = context.getSharedPreferences("remindr_app_state", Context.MODE_PRIVATE)
-    
+
     override val installDate: Instant
-        get() = Instant.fromEpochMilliseconds(
-            prefs.getLong("install_date", Clock.System.now().toEpochMilliseconds())
-        )
+        get() {
+            val key = "install_date"
+            val now = Clock.System.now().toEpochMilliseconds()
+            val stored = prefs.getLong(key, -1)
+            if (stored == -1L) {
+                prefs.edit { putLong(key, now) }
+                return Instant.fromEpochMilliseconds(now)
+            }
+            return Instant.fromEpochMilliseconds(stored)
+        }
 
     override var launchCount: Int
         get() = prefs.getInt("launch_count", 0)
@@ -33,10 +40,13 @@ class AppStateImpl(
     override var currentRoute: String? = null
 
     override fun getCurrentActivity(): Activity? {
-        return (context as? Activity) ?:
-            (context.findActivity() as? Activity)
+        return (context as? Activity) ?: context.findActivity()
     }
-    
+
+    override suspend fun incrementLaunchCount() {
+        prefs.edit { putInt("launch_count", launchCount + 1) }
+    }
+
     private fun Context.findActivity(): Activity? = when (this) {
         is Activity -> this
         is ContextWrapper -> baseContext.findActivity()

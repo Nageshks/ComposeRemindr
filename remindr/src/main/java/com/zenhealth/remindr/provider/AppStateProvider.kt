@@ -5,8 +5,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
-import com.zenhealth.remindr.state.AppStateImpl
 import com.zenhealth.remindr.state.AppState
+import com.zenhealth.remindr.state.DefaultAppState
 
 val LocalAppState = staticCompositionLocalOf<AppState> {
     error("No AppState provided")
@@ -14,10 +14,13 @@ val LocalAppState = staticCompositionLocalOf<AppState> {
 
 @Composable
 fun AppStateProvider(
+    appStateOverride: AppState? = null,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val appState = remember { AppStateImpl(context).apply { launchCount++ } }
+    val appState = remember {
+        appStateOverride ?: DefaultAppState(context).apply { launchCount++ }
+    }
 
     CompositionLocalProvider(LocalAppState provides appState) {
         content()

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,7 +21,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.zenhealth.remindr.core.ReminderContext
 import com.zenhealth.remindr.provider.LocalRemindr
+
 
 @Composable
 fun ReminderHost() {
@@ -29,7 +32,23 @@ fun ReminderHost() {
 
     currentReminder?.let { reminder ->
         var isActive by remember(reminder) { mutableStateOf(true) }
+        val triggered = remember(reminder.id) { mutableStateOf(false) }
 
+        // Run onTriggered only once when the reminder is first shown
+        LaunchedEffect(reminder.id) {
+            if (!triggered.value) {
+                val context = ReminderContext(
+                    storage = remindr.storage,
+                    appState = remindr.appState,
+                    sessionState = remindr.sessionState,
+                    reminderId = reminder.id
+                )
+                reminder.conditions.forEach { it.onTriggered(context) }
+                triggered.value = true
+            }
+        }
+
+        // Handle lifecycle clean-up
         DisposableEffect(reminder) {
             onDispose {
                 if (isActive) {
@@ -44,7 +63,7 @@ fun ReminderHost() {
                 modifier = Modifier
                     .fillMaxSize()
                     .zIndex(100f)
-                    .pointerInput(Unit) { detectTapGestures {} } // Blocks background touches
+                    .pointerInput(Unit) { detectTapGestures {} } // Block touches below
             ) {
                 if (LocalInspectionMode.current) {
                     Box(

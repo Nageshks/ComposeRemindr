@@ -6,7 +6,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.zenhealth.remindr.core.ReminderEngine
 import com.zenhealth.remindr.provider.LocalAppState
-import com.zenhealth.remindr.storage.DataStoreReminderStorage
+import com.zenhealth.remindr.provider.ReminderStorageProvider
+import com.zenhealth.remindr.state.SessionState
 
 object Remindr {
     private var remindrInstance: ReminderEngine? = null
@@ -16,11 +17,12 @@ object Remindr {
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
         val appState = LocalAppState.current
-
+        val session = remember { SessionState() }
         return remember(context, coroutineScope, appState) {
             ReminderEngine(
-                storage = DataStoreReminderStorage(context),
+                storage = ReminderStorageProvider.get(context),
                 appState = appState,
+                sessionState = session,
                 coroutineScope = coroutineScope
             ).also {
                 remindrInstance = it

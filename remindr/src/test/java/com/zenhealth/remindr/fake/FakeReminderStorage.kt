@@ -10,7 +10,6 @@ import kotlin.time.Instant
 class FakeReminderStorage : ReminderStorage {
     private val triggerTimes = mutableMapOf<String, Instant?>()
     private val triggerCounts = mutableMapOf<String, Int>()
-    private val flags = mutableMapOf<String, Boolean>()
 
     override suspend fun getLastTriggered(reminderId: String) = triggerTimes[reminderId]
     override suspend fun setLastTriggered(reminderId: String, time: Instant) {
@@ -22,8 +21,4 @@ class FakeReminderStorage : ReminderStorage {
         triggerCounts[reminderId] = (triggerCounts[reminderId] ?: 0) + 1
     }
 
-    override suspend fun getCustomFlag(key: String) = flags[key] ?: false
-    override suspend fun setCustomFlag(key: String, value: Boolean) {
-        flags[key] = value
-    }
 }

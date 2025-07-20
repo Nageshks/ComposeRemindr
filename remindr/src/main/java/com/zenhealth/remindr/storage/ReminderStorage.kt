@@ -10,6 +10,4 @@ interface ReminderStorage {
     suspend fun setLastTriggered(reminderId: String, time: Instant)
     suspend fun getTriggerCount(reminderId: String): Int
     suspend fun incrementTriggerCount(reminderId: String)
-    suspend fun getCustomFlag(key: String): Boolean
-    suspend fun setCustomFlag(key: String, value: Boolean)
 }

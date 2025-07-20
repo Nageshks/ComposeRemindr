@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onPressProfile: () -> Unit) {
+fun ProfileScreen(onPressHome: () -> Unit) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Home") })
+            TopAppBar(title = { Text("Profile Screen") })
         }
     ) { padding ->
         Box(modifier = Modifier
@@ -27,8 +27,8 @@ fun HomeScreen(onPressProfile: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Column {
-                TextButton(onPressProfile) {
-                    Text("Go to Profile")
+                TextButton(onPressHome) {
+                    Text("Go to Home")
                 }
             }
         }

@@ -18,13 +18,11 @@ class DataStoreReminderStorage(
     
     @OptIn(ExperimentalTime::class)
     override suspend fun getLastTriggered(reminderId: String): Instant? {
-        return context.dataStore.data
-            .map { prefs ->
+        return context.dataStore.data.map { prefs ->
                 prefs[longPreferencesKey("last_triggered_$reminderId")]?.let {
                     Instant.fromEpochMilliseconds(it)
                 }
-            }
-            .first()
+            }.first()
     }
     
     override suspend fun setLastTriggered(reminderId: String, time: Instant) {
@@ -45,20 +43,6 @@ class DataStoreReminderStorage(
         context.dataStore.edit { prefs ->
             val current = prefs[intPreferencesKey("trigger_count_$reminderId")] ?: 0
             prefs[intPreferencesKey("trigger_count_$reminderId")] = current + 1
-        }
-    }
-    
-    override suspend fun getCustomFlag(key: String): Boolean {
-        return context.dataStore.data
-            .map { prefs ->
-                prefs[booleanPreferencesKey(key)] ?: false
-            }
-            .first()
-    }
-    
-    override suspend fun setCustomFlag(key: String, value: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[booleanPreferencesKey(key)] = value
         }
     }
 }
