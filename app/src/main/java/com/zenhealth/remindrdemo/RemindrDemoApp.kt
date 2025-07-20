@@ -8,14 +8,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.zenhealth.remindr.conditions.basic.AlwaysFalseCondition
-import com.zenhealth.remindr.conditions.time.OneTimeReminderCondition
-import com.zenhealth.remindr.conditions.session.AppLaunchCountCondition
-import com.zenhealth.remindr.conditions.route.RouteCondition
 import com.zenhealth.remindr.conditions.session.MinimumAppLaunchCondition
+import com.zenhealth.remindr.conditions.time.OneTimeReminderCondition
 import com.zenhealth.remindr.conditions.time.RepeatEveryXDaysCondition
-import com.zenhealth.remindr.core.Reminder
-import com.zenhealth.remindr.core.ReminderBuilder
 import com.zenhealth.remindr.provider.AppStateProvider
 import com.zenhealth.remindr.provider.LocalRemindr
 import com.zenhealth.remindr.provider.RemindrProvider
@@ -24,33 +19,6 @@ import com.zenhealth.remindrdemo.componensts.HomeScreen
 import com.zenhealth.remindrdemo.componensts.OnboardingScreen
 import com.zenhealth.remindrdemo.componensts.ProfileScreen
 
-
-fun buildFeedbackReminder(): Reminder {
-    return ReminderBuilder()
-        .id("feedback_reminder")
-        .addCondition(MinimumAppLaunchCondition(3))
-        .addCondition(RepeatEveryXDaysCondition(7))
-        .priority(2)
-        .content { onDismiss ->
-            Dialog(onDismiss) {
-                FeedbackDialog {
-                    onDismiss()
-                }
-            }
-        }.build()
-}
-
-fun buildOnboardingReminder(): Reminder {
-    return ReminderBuilder()
-        .id("onboarding")
-        .addCondition(OneTimeReminderCondition())
-        .priority(1)
-        .content { onDismiss ->
-            OnboardingScreen {
-                onDismiss()
-            }
-        }.build()
-}
 
 @Composable
 fun ProvideAppState(content: @Composable () -> Unit) {
@@ -64,7 +32,6 @@ fun ProvideAppState(content: @Composable () -> Unit) {
     }
 }
 
-
 @Composable
 fun RemindrDemoApp() {
     val navController = rememberNavController()
@@ -72,9 +39,32 @@ fun RemindrDemoApp() {
         RemindrProvider(navController) {
             val remindr = LocalRemindr.current
             LaunchedEffect(Unit) {
-                remindr.registerReminder(buildOnboardingReminder())
-                remindr.registerReminder(buildFeedbackReminder())
-                remindr.evaluateReminders()
+                remindr.setReminders(this){
+                    reminder {
+                        id("onboarding")
+                        condition {
+                            OneTimeReminderCondition()
+                        }
+                        priority(1)
+                        content { onDismiss->
+                            OnboardingScreen { onDismiss() }
+                        }
+                    }
+                    reminder {
+                        id("feedback_reminder")
+                        condition {
+                            MinimumAppLaunchCondition(3) and RepeatEveryXDaysCondition(7)
+                        }
+                        priority(2)
+                        content { onDismiss->
+                            Dialog(onDismiss) {
+                                FeedbackDialog {
+                                    onDismiss()
+                                }
+                            }
+                        }
+                    }
+                }
             }
             NavHost(
                 navController = navController,

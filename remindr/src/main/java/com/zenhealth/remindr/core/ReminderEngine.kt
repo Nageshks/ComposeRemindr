@@ -1,5 +1,6 @@
 package com.zenhealth.remindr.core
 
+import com.zenhealth.remindr.core.builder.ReminderGroupBuilder
 import com.zenhealth.remindr.listener.ReminderEvaluationListener
 import com.zenhealth.remindr.state.AppState
 import com.zenhealth.remindr.state.SessionState
@@ -28,6 +29,12 @@ class ReminderEngine(
     fun registerReminder(reminder: Reminder) {
         activeReminders.add(reminder)
         RemindrLogger.d("📌 Registered reminder: ${reminder.id}")
+    }
+
+    fun setReminders(scope: CoroutineScope, block: ReminderGroupBuilder.() -> Unit) {
+        val newReminders = ReminderGroupBuilder().apply(block).build()
+        activeReminders.addAll(newReminders)
+        scope.launch { evaluateReminders() }
     }
 
     fun clearCurrent() {

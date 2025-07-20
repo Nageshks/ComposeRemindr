@@ -1,6 +1,7 @@
 package com.zenhealth.remindr.core
 
 import androidx.compose.runtime.Composable
+import com.zenhealth.remindr.core.builder.reminder
 import kotlinx.coroutines.delay
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -32,13 +33,16 @@ class ReminderBuilderTest {
     @Test
     fun `build creates Reminder with valid fields`() {
         val reminderId = "test_id"
-        val reminder = ReminderBuilder()
-            .id(reminderId)
-            .addCondition(testCondition)
-            .requiresExternalCondition("battery_low")
-            .priority(3)
-            .content(testContent)
-            .build()
+
+        val reminder = reminder {
+            id(reminderId)
+            priority(3)
+            condition {
+                and(testCondition)
+            }
+//            external("battery_low")
+            content(testContent)
+        }
 
         assertEquals(reminderId, reminder.id)
         assertEquals(1, reminder.conditions.size)
@@ -46,25 +50,27 @@ class ReminderBuilderTest {
         assertEquals(1, reminder.externalConditionKeys.size)
         assertEquals("battery_low", reminder.externalConditionKeys[0])
         assertEquals(3, reminder.priority)
-        // Since Composables can't be tested directly here, just assert it's not empty
         assertNotNull(reminder.content)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun `build throws if no conditions are provided`() {
-        ReminderBuilder()
-            .id("no_conditions")
-            .priority(1)
-            .content(testContent)
-            .build()
+        reminder {
+            id("no_conditions")
+            priority(1)
+            content(testContent)
+        }
     }
 
     @Test
     fun `builder assigns default ID when not explicitly set`() {
-        val reminder = ReminderBuilder()
-            .addCondition(testCondition)
-            .content(testContent)
-            .build()
+        val reminder = reminder {
+            priority(2)
+            condition {
+                and(testCondition)
+            }
+            content(testContent)
+        }
 
         assertTrue(reminder.id.isNotBlank())
     }
